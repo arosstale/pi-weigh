@@ -1,10 +1,23 @@
 {
   "name": "@artale/pi-weigh",
-  "version": "1.1.1",
+  "version": "1.1.0",
   "description": "Weigh your context. Visual HTML report of system prompt token budget — per-tool breakdown, section analysis, health indicator. Zero dependencies.",
-  "keywords": ["pi-package", "pi-extension", "tokens", "context", "observability", "system-prompt", "optimization"],
+  "keywords": [
+    "pi-package",
+    "pi-extension",
+    "tokens",
+    "context",
+    "observability",
+    "system-prompt",
+    "optimization"
+  ],
   "license": "MIT",
   "author": "artale",
-  "repository": { "type": "git", "url": "https://github.com/arosstale/pi-weigh.git" },
-  "extensions": ["extensions/pi-weigh.ts"]
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/arosstale/pi-weigh.git"
+  },
+  "extensions": [
+    "extensions/pi-weigh.ts"
+  ]
 }

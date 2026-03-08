@@ -198,6 +198,17 @@ export default function piWeigh(pi: ExtensionAPI) {
       
       const deactivateSavings = deactivateCandidates.reduce((s, t) => s + t.tokens, 0);
 
+      // ── GPT-5.4 Tool Search Efficiency Analysis ────────────────
+      // GPT-5.4 introduced "tool search" — lightweight tool index instead of full definitions.
+      // This reduced token usage by 47% on MCP Atlas benchmark (250 tasks, 36 MCP servers).
+      // We calculate what a tool-search approach would save for our tool set.
+      const toolSearchIndexTokens = toolBurden.reduce((sum, t) => {
+        // A lightweight index entry: name + 10-word description ≈ 15 tokens per tool
+        return sum + 15;
+      }, 0);
+      const toolSearchSavings = totalToolTokens - toolSearchIndexTokens;
+      const toolSearchPct = totalToolTokens > 0 ? ((toolSearchSavings / totalToolTokens) * 100).toFixed(0) : "0";
+
       // Parse skills from system prompt
       const skillMatches = systemPrompt.matchAll(/<skill>\s*<name>(.*?)<\/name>\s*<description>(.*?)<\/description>/gs);
       const skillRows: string[] = [];
@@ -281,6 +292,14 @@ ${skillRows.length > 15 ? `<tr><td colspan="3" style="color:var(--dim)">... ${sk
 ${deactivateCandidates.length ? `<h2>💤 Deactivation Candidates (save ~${deactivateSavings.toLocaleString()} tokens)</h2>
 <p style="color:var(--dim);font-size:.8rem;margin-bottom:.5rem">These active tools cost >200 tokens each and could be deactivated when not needed</p>
 <table><tr><th>Tool</th><th>Tokens</th><th>Source</th><th>Description</th></tr>${deactivateRows}</table>` : ""}
+<h2>🔍 Tool Search Efficiency (GPT-5.4 Pattern)</h2>
+<p style="color:var(--dim);font-size:.8rem;margin-bottom:.5rem">GPT-5.4 replaced full tool schemas with a lightweight search index — 47% savings on MCP Atlas (250 tasks, 36 servers)</p>
+<div class="grid" style="grid-template-columns:1fr 1fr 1fr">
+  <div class="card"><div class="stat" style="color:#f85149">${totalToolTokens.toLocaleString()}</div><div class="stat-label">Current: Full Schemas</div></div>
+  <div class="card"><div class="stat" style="color:#3fb950">${toolSearchIndexTokens.toLocaleString()}</div><div class="stat-label">With Tool Search Index</div></div>
+  <div class="card"><div class="stat" style="color:#58a6ff">${toolSearchPct}%</div><div class="stat-label">Potential Savings</div></div>
+</div>
+<p style="color:var(--dim);font-size:.8rem">If pi adopted GPT-5.4's tool-search pattern, tools would cost ~${toolSearchIndexTokens.toLocaleString()} tokens (index only) instead of ${totalToolTokens.toLocaleString()} (full schemas). Full definitions loaded on-demand when the model calls tool_search.</p>
 ${historySection}
 <div class="reco"><h2 style="border:0;margin:0 0 .5rem">💡 Recommendations</h2>
 <p>${healthIcon} System prompt uses <strong>${promptPercent.toFixed(1)}%</strong> of context window${promptPercent > 15 ? " — <span style='color:#f85149'>consider pruning skills or tool descriptions</span>" : promptPercent > 10 ? " — monitor but OK" : " — healthy"}</p>
