@@ -1,6 +1,6 @@
 {
   "name": "@artale/pi-weigh",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Weigh your context. Visual HTML report of system prompt token budget — per-tool breakdown, section analysis, health indicator. Zero dependencies.",
   "keywords": [
     "pi-package",
